@@ -380,6 +380,8 @@ let currentMessage='',activeProduct=null,lastTrigger=null,focusRequest=false,cur
 const placeholder=new Option('Selecione um modelo ou traga sua ideia','',true,true);placeholder.disabled=true;productSelect.add(placeholder);
 products.forEach(p=>productSelect.add(new Option(p.title,p.id)));
 productSelect.add(new Option('Minha própria ideia','personalizado'));
+const requestedProduct=new URLSearchParams(window.location.search).get('produto');
+if(requestedProduct&&products.some(p=>p.id===requestedProduct))productSelect.value=requestedProduct;
 function renderProducts(filter='todos'){
  const visible=products.filter(p=>filter==='todos'||p.category===filter);
  grid.innerHTML=visible.map((p,i)=>`<article class="product-card"><button class="product-visual ${p.kind==='video'?'portrait-photo':''}" type="button" data-detail="${p.id}" aria-label="${p.isKit?'Ver kit '+p.title:'Explorar '+p.title}"><img src="${p.image}" alt="${p.alt}" width="600" height="600" loading="lazy" decoding="async"><span class="product-index">${String(products.indexOf(p)+1).padStart(2,'0')}</span><span class="product-badge ${p.kind==='reference'?'reference-badge':''}">${p.kind==='video'?'<span aria-hidden="true">▶</span> ':''}${p.badge}</span><span class="image-expand" aria-hidden="true">↗</span></button><div class="product-info"><div class="product-category">${p.categoryLabel}</div><h3>${p.title}</h3><p>${p.description}</p><button class="product-link" type="button" data-detail="${p.id}">${p.isKit?'Ver kit':'Explorar modelo'} <span aria-hidden="true">↗</span></button></div></article>`).join('');
