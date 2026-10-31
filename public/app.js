@@ -219,12 +219,12 @@ const products = [
     "title": "Bandeja Oval Canelada Branca",
     "category": "decoracao",
     "categoryLabel": "Decoração",
-    "badge": "3 ângulos do produto",
+    "badge": "2 vistas do produto",
     "kind": "photo",
     "image": "assets/bandeja-branca-esquerda.webp",
     "alt": "Bandeja oval branca com borda canelada, fotografada sem enfeites",
     "description": "Uma base para montar composições decorativas e organizar pequenos objetos.",
-    "detail": "Bandeja oval branca com borda canelada. Este produto é a bandeja avulsa, apresentada sem enfeites nas três fotos da galeria.",
+    "detail": "Bandeja oval branca com borda canelada. Este produto é a bandeja avulsa, apresentada sem enfeites nas duas fotos da galeria.",
     "points": [
       "Bandeja avulsa em formato oval",
       "Borda canelada e acabamento branco",
@@ -234,12 +234,7 @@ const products = [
       {
         "type": "image",
         "src": "assets/bandeja-branca-esquerda.webp",
-        "alt": "Bandeja Oval Canelada Branca avulsa — vista principal"
-      },
-      {
-        "type": "image",
-        "src": "assets/bandeja-branca-direita.webp",
-        "alt": "A mesma bandeja branca avulsa — vista lateral direita"
+        "alt": "Bandeja Oval Canelada Branca — vista principal"
       },
       {
         "type": "image",
@@ -391,7 +386,7 @@ const products = [
   }
 ];
 async function initializeCatalog(){
-try { const res=await fetch('/api/products'); if(res.ok){const updated=await res.json(); products.splice(0,products.length,...updated);} } catch(e){ console.error('Não foi possível atualizar o catálogo',e); }
+try { const res=await fetch('/api/products', {signal: AbortSignal.timeout(5000)}); if(res.ok){const updated=await res.json(); products.splice(0,products.length,...updated);} } catch(e){ console.error('Não foi possível atualizar o catálogo',e); }
 const byId = id => document.getElementById(id);
 const grid=byId('productGrid'),productSelect=byId('requestProduct'),form=byId('requestForm'),dialog=byId('productDialog');
 let currentMessage='',activeProduct=null,lastTrigger=null,focusRequest=false,currentMediaIndex=0;
@@ -399,14 +394,71 @@ const placeholder=new Option('Selecione um modelo ou traga sua ideia','',true,tr
 products.forEach(p=>productSelect.add(new Option(p.title,p.id)));
 productSelect.add(new Option('Minha própria ideia','personalizado'));
 const requestedProduct=new URLSearchParams(window.location.search).get('produto');
-if(requestedProduct&&products.some(p=>p.id===requestedProduct))productSelect.value=requestedProduct;
-function renderProducts(filter='todos'){
- const visible=products.filter(p=>filter==='todos'||p.category===filter);
+if(requestedProduct&&(requestedProduct==='personalizado'||products.some(p=>p.id===requestedProduct)))productSelect.value=requestedProduct;
+let activeFilter='todos';
+const normalize=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function renderProducts(filter=activeFilter){
+ activeFilter=filter;const query=normalize(byId('catalogSearch').value.trim());
+ const visible=products.filter(p=>(filter==='todos'||p.category===filter)&&normalize(p.title+' '+p.description+' '+p.categoryLabel).includes(query));
+ byId('emptyCatalog').hidden=visible.length>0;
  grid.innerHTML=visible.map((p,i)=>`<article class="product-card"><button class="product-visual ${p.kind==='video'?'portrait-photo':''}" type="button" data-detail="${p.id}" aria-label="${p.isKit?'Ver kit '+p.title:'Explorar '+p.title}"><img src="${p.image}" alt="${p.alt}" width="600" height="600" loading="lazy" decoding="async"><span class="product-index">${String(products.indexOf(p)+1).padStart(2,'0')}</span><span class="product-badge ${p.kind==='reference'?'reference-badge':''}">${p.kind==='video'?'<span aria-hidden="true">▶</span> ':''}${p.badge}</span><span class="image-expand" aria-hidden="true">↗</span></button><div class="product-info"><div class="product-category">${p.categoryLabel}</div><h3>${p.title}</h3><p>${p.description}</p><button class="product-link" type="button" data-detail="${p.id}">${p.isKit?'Ver kit':'Explorar modelo'} <span aria-hidden="true">↗</span></button></div></article>`).join('');
  byId('productCount').textContent=`${String(visible.length).padStart(2,'0')} PRODUTOS`;
  byId('filterStatus').textContent=`${visible.length} produtos exibidos`;
 }
 renderProducts();
+byId('catalogSearch').addEventListener('input',()=>renderProducts());
+byId('resetCatalog').addEventListener('click',()=>{
+ byId('catalogSearch').value='';
+ document.querySelectorAll('.filter-chip').forEach(chip=>{const on=chip.dataset.filter==='todos';chip.classList.toggle('is-active',on);chip.setAttribute('aria-pressed',String(on));});
+ renderProducts('todos');
+});
+const decode=value=>{const t=document.createElement('textarea');t.innerHTML=value;return t.value;};
+function syncModes(){
+ document.querySelectorAll('[data-request-mode]').forEach(b=>{const on=(productSelect.value==='personalizado')===(b.dataset.requestMode==='ideia');b.classList.toggle('is-active',on);b.setAttribute('aria-pressed',String(on));});
+}
+syncModes();
+productSelect.addEventListener('change',syncModes);
+document.querySelectorAll('[data-request-mode]').forEach(button=>button.addEventListener('click',()=>{
+ productSelect.value=button.dataset.requestMode==='ideia'?'personalizado':'';
+ byId('requestResult').hidden=true;currentMessage='';syncModes();
+ if(button.dataset.requestMode==='ideia')byId('requestNote').focus({preventScroll:true});else productSelect.focus({preventScroll:true});
+}));
+const selections=[
+ {id:'kit-ore-confie',label:'Decoração'},
+ {id:'kit-feliz-natal',label:'Natal'},
+ {id:'esqueleto-articulado',label:'Articulados'}
+].filter(x=>products.some(p=>p.id===x.id));
+if(!selections.length&&products.length)selections.push({id:products[0].id,label:products[0].categoryLabel});
+byId('heroTabs').innerHTML=selections.map((x,i)=>'<button class="hero-tab" type="button" data-hero="'+i+'" aria-pressed="'+(i===0)+'"><span>0'+(i+1)+'</span>'+x.label+'</button>').join('');
+function showHero(index){
+ const p=products.find(p=>p.id===selections[index].id);if(!p)return;
+ byId('heroImage').src=p.image;byId('heroImage').alt=decode(p.alt||p.title);
+ byId('heroTitle').textContent=decode(p.title);byId('heroCategory').textContent=p.categoryLabel;
+ byId('heroDetail').dataset.detail=p.id;byId('heroDetail').setAttribute('aria-label','Ver detalhes: '+decode(p.title));
+ byId('heroStatus').textContent=decode(p.title)+' em destaque';
+ document.querySelectorAll('[data-hero]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+}
+byId('heroTabs').addEventListener('click',e=>{const b=e.target.closest('[data-hero]');if(b)showHero(Number(b.dataset.hero));});
+if(selections.length)showHero(0);else byId('heroDetail').hidden=true;
+document.querySelectorAll('[data-feature-product]').forEach(section=>{
+ const p=products.find(p=>p.id===section.dataset.featureProduct);section.hidden=!p;
+ if(p){const img=section.querySelector('img');img.src=p.image;img.alt=decode(p.alt||p.title);}
+});
+const videoOrder=['kit-ore-confie','arco-natalino','kit-feliz-natal','lagarto'];
+const clips=videoOrder.map(id=>{const p=products.find(p=>p.id===id);const media=p?.media.find(m=>m.type==='video');return media?{...media,title:p.title,id:p.id}:null;}).filter(Boolean);
+clips.splice(Math.min(3,clips.length),0,{src:'assets/video-letreiro-feliz-natal.mp4',poster:'assets/video-letreiro-feliz-natal-poster.jpg',alt:'Letreiro Feliz Natal com floco de neve e base vermelha',title:'Letreiro Feliz Natal',id:null});
+byId('videoList').innerHTML=clips.map((c,i)=>'<button class="video-option" type="button" data-clip="'+i+'" aria-pressed="'+(i===0)+'"><span>0'+(i+1)+'</span><span>'+c.title+'</span><span aria-hidden="true">▶</span></button>').join('');
+function showClip(index){
+ const clip=clips[index],v=byId('showcaseVideo');v.pause();v.src=clip.src;v.poster=clip.poster||'';v.setAttribute('aria-label',decode(clip.alt));v.load();
+ byId('videoTitle').textContent=decode(clip.title);
+ const action=byId('videoDetail');delete action.dataset.detail;delete action.dataset.request;
+ if(clip.id){action.dataset.detail=clip.id;action.innerHTML='Ver a peça <span aria-hidden="true">↗</span>';delete action.dataset.reference;}
+ else{action.dataset.request='personalizado';action.dataset.reference='Gostei do Letreiro Feliz Natal com floco de neve e base vermelha.';action.innerHTML='Consultar o modelo <span aria-hidden="true">↗</span>';}
+ document.querySelectorAll('[data-clip]').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+}
+byId('videoList').addEventListener('click',e=>{const b=e.target.closest('[data-clip]');if(b)showClip(Number(b.dataset.clip));});
+if(clips.length)showClip(0);
+document.addEventListener('play',e=>{if(e.target.tagName==='VIDEO')document.querySelectorAll('video').forEach(v=>{if(v!==e.target)v.pause();});},true);
 document.querySelectorAll('.filter-chip').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.filter-chip').forEach(chip=>{const on=chip===button;chip.classList.toggle('is-active',on);chip.setAttribute('aria-pressed',String(on));});renderProducts(button.dataset.filter);}));
 function renderDetailMedia(index){
  currentMediaIndex=(index+activeProduct.media.length)%activeProduct.media.length;
@@ -421,15 +473,15 @@ function renderDetailMedia(index){
 function openDetail(id,trigger){
  activeProduct=products.find(p=>p.id===id);if(!activeProduct)return;
  lastTrigger=trigger;focusRequest=false;
- byId('detailBody').innerHTML=`<div class="detail-gallery"><div id="detailStage" class="detail-stage ${activeProduct.kind==='video'?'detail-video':''}"></div><div class="gallery-controls" ${activeProduct.media.length<2?'hidden':''}><button type="button" data-gallery-step="-1" aria-label="Imagem anterior">←</button><span id="galleryCount" aria-live="polite"></span><button type="button" data-gallery-step="1" aria-label="Próxima imagem">→</button></div><p id="galleryCaption" class="gallery-caption"></p><div class="media-thumbs">${activeProduct.media.map((m,i)=>`<button class="media-thumb" type="button" data-media="${i}" aria-label="${m.type==='video'?'Ver vídeo':'Ver imagem '+(i+1)+' de '+activeProduct.media.length}" aria-pressed="${i===0}"><img src="${m.poster||m.src}" alt="">${m.type==='video'?'<span aria-hidden="true">▶</span>':''}</button>`).join('')}</div></div><div class="detail-copy"><div class="eyebrow">${activeProduct.categoryLabel}</div><h2 id="detailTitle">${activeProduct.title}</h2><span class="detail-source">${activeProduct.badge}</span><p>${activeProduct.detail}</p><ul>${activeProduct.points.map(p=>`<li>${p}</li>`).join('')}</ul><button class="button button-orange detail-request" type="button" data-request="${activeProduct.id}">${activeProduct.isKit?'Quero este kit':'Quero conversar sobre este modelo'} <span aria-hidden="true">↗</span></button><small>Disponibilidade, variações e prazo são confirmados no atendimento.</small></div>`;
+ byId('detailBody').innerHTML=`<div class="detail-gallery"><div id="detailStage" class="detail-stage ${activeProduct.kind==='video'?'detail-video':''}"></div><div class="gallery-controls" ${activeProduct.media.length<2?'hidden':''}><button type="button" data-gallery-step="-1" aria-label="Imagem anterior">←</button><span id="galleryCount" aria-live="polite"></span><button type="button" data-gallery-step="1" aria-label="Próxima imagem">→</button></div><p id="galleryCaption" class="gallery-caption"></p><div class="media-thumbs">${activeProduct.media.map((m,i)=>`<button class="media-thumb" type="button" data-media="${i}" aria-label="${m.type==='video'?'Ver vídeo':'Ver imagem '+(i+1)+' de '+activeProduct.media.length}" aria-pressed="${i===0}"><img src="${m.poster||m.src}" alt="">${m.type==='video'?'<span aria-hidden="true">▶</span>':''}</button>`).join('')}</div></div><div class="detail-copy"><div class="eyebrow">${activeProduct.categoryLabel}</div><h2 id="detailTitle">${activeProduct.title}</h2><span class="detail-source">${activeProduct.badge}</span><p>${activeProduct.detail}</p><ul>${activeProduct.points.map(p=>`<li>${p}</li>`).join('')}</ul><button class="button button-orange detail-request" type="button" data-request="${activeProduct.id}">${activeProduct.isKit?'Quero este kit':'Quero esta peça'} <span aria-hidden="true">↗</span></button><small>Disponibilidade, variações e prazo são confirmados no atendimento.</small></div>`;
  renderDetailMedia(0);dialog.showModal();document.body.classList.add('dialog-open');
 }
-function chooseProduct(id){productSelect.value=id;currentMessage='';byId('requestResult').hidden=true;byId('personalizar').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});setTimeout(()=>productSelect.focus({preventScroll:true}),350);}
+function chooseProduct(id){productSelect.value=id;syncModes();currentMessage='';byId('requestResult').hidden=true;byId('personalizar').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});setTimeout(()=>productSelect.focus({preventScroll:true}),350);}
 document.addEventListener('click',event=>{
  const detail=event.target.closest('[data-detail]');if(detail)openDetail(detail.dataset.detail,detail);
  const media=event.target.closest('[data-media]');if(media)renderDetailMedia(Number(media.dataset.media));
  const step=event.target.closest('[data-gallery-step]');if(step)renderDetailMedia(currentMediaIndex+Number(step.dataset.galleryStep));
- const request=event.target.closest('[data-request]');if(request){focusRequest=true;dialog.close();chooseProduct(request.dataset.request);}
+ const request=event.target.closest('[data-request]');if(request){focusRequest=true;dialog.close();chooseProduct(request.dataset.request);if(request.dataset.reference)byId('requestNote').value=request.dataset.reference;}
 });
 dialog.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)&&!['VIDEO','INPUT','SELECT','TEXTAREA'].includes(event.target.tagName)){event.preventDefault();renderDetailMedia(currentMediaIndex+(event.key==='ArrowRight'?1:-1));}});
 byId('closeDetail').addEventListener('click',()=>dialog.close());
@@ -437,12 +489,13 @@ dialog.addEventListener('close',()=>{dialog.querySelectorAll('video').forEach(v=
 dialog.addEventListener('click',e=>{const r=dialog.getBoundingClientRect();if(e.target===dialog&&(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom))dialog.close();});
 const menuToggle=byId('menuToggle');menuToggle.addEventListener('click',()=>{const open=menuToggle.getAttribute('aria-expanded')!=='true';menuToggle.setAttribute('aria-expanded',String(open));byId('siteNav').classList.toggle('is-open',open);});
 byId('siteNav').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{byId('siteNav').classList.remove('is-open');menuToggle.setAttribute('aria-expanded','false');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){byId('siteNav').classList.remove('is-open');menuToggle.setAttribute('aria-expanded','false');}});
 form.addEventListener('input',()=>{byId('requestResult').hidden=true;currentMessage='';});
 form.addEventListener('submit',event=>{
  event.preventDefault();if(!form.reportValidity())return;
  const selected=products.find(p=>p.id===productSelect.value),color=byId('requestColor').value,note=byId('requestNote').value.trim();
- currentMessage=['Olá, CAMPRINT! Quero conversar sobre '+(selected?selected.title:'uma ideia personalizada')+'.','Cor de preferência: '+color+'.',note?'Minha ideia / observação: '+note:'','Podemos confirmar as opções, o valor e o prazo?'].filter(Boolean).join('\n');
- byId('requestMessage').textContent=currentMessage;byId('requestStatus').textContent='';byId('requestResult').hidden=false;byId('copyRequest').focus({preventScroll:true});
+ currentMessage=['Olá, CAMPRINT! Quero conversar sobre '+(selected?decode(selected.title):'uma ideia personalizada')+'.','Cor de preferência: '+color+'.',note?'Minha ideia / observação: '+note:'','Podemos confirmar as opções, o valor e o prazo?'].filter(Boolean).join('\n');
+ byId('requestMessage').textContent=currentMessage;byId('requestStatus').textContent='';byId('requestResult').hidden=false;byId('requestResult').scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});byId('copyRequest').focus({preventScroll:true});
 });
 async function copyMessage(){if(!currentMessage)return;try{await navigator.clipboard.writeText(currentMessage);byId('requestStatus').textContent='Mensagem copiada. Agora envie pelo canal CAMPRINT onde você conversa com a gente.';}catch{const range=document.createRange();range.selectNodeContents(byId('requestMessage'));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);byId('requestStatus').textContent='Selecione e copie a mensagem acima para enviar à CAMPRINT.';}}
 byId('copyRequest').addEventListener('click',copyMessage);
