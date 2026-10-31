@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="video-showcase.css">
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -24,7 +25,7 @@
   <div class="container header-inner">
     <a class="brand" href="#topo" aria-label="CAMPRINT — início"><img src="camprint-mark.svg" alt="" width="48" height="48"><span class="brand-type"><span class="brand-word">CAM<span>PRINT</span></span><small>IMPRESSÃO 3D</small></span></a>
     <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteNav">Menu <span aria-hidden="true">☰</span></button>
-    <nav id="siteNav" aria-label="Navegação principal"><a href="#modelos">Ver peças</a><a href="kit-feliz-natal.html">Kit de Natal</a><a href="#como-funciona">Como pedir</a></nav>
+    <nav id="siteNav" aria-label="Navegação principal"><a href="#modelos">Ver peças</a><a href="#videos">Vídeos</a><a href="kit-feliz-natal.html">Kit de Natal</a><a href="#como-funciona">Como pedir</a></nav>
     <a class="button button-orange header-cta" href="#personalizar">Quero pedir <span aria-hidden="true">↗</span></a>
   </div>
 </header>
@@ -56,6 +57,30 @@
       <div class="catalog-toolbar"><div class="filter-row" role="group" aria-label="Filtrar modelos"><button class="filter-chip is-active" type="button" data-filter="todos" aria-pressed="true">Todos os modelos</button><button class="filter-chip" type="button" data-filter="natal" aria-pressed="false">Kits de Natal</button><button class="filter-chip" type="button" data-filter="articulados" aria-pressed="false">Articulados</button><button class="filter-chip" type="button" data-filter="colecionaveis" aria-pressed="false">Colecionáveis</button><button class="filter-chip" type="button" data-filter="decoracao" aria-pressed="false">Decoração</button></div><span id="productCount" class="product-count"></span></div>
       <div id="productGrid" class="product-grid"></div><div id="filterStatus" class="sr-only" role="status" aria-live="polite"></div>
       <a class="catalog-custom" href="#personalizar"><span class="custom-plus" aria-hidden="true">+</span><div><strong>Tem uma ideia diferente?</strong><span>Conte o que você imagina e consulte as possibilidades de personalização.</span></div><span class="catalog-custom-arrow" aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+
+  <section class="product-videos section-space" id="videos">
+    <div class="container">
+      <div class="section-heading"><div><div class="eyebrow">VÍDEOS CAMPRINT</div><h2>Veja os detalhes em movimento.</h2></div><p>Assista a vídeos curtos de algumas peças e observe formas, recortes e composições de outros ângulos.</p></div>
+      <div class="product-video-grid">
+        <article class="product-video-card">
+          <div class="product-video-frame"><video controls playsinline preload="none" poster="assets/arco-natalino-esquerda.webp" width="640" height="360" aria-label="Vídeo do Arco Natalino Decorativo em movimento"><source src="assets/video-arco-natalino-camera.mp4" type="video/mp4">Seu navegador não reproduz este vídeo.</video></div>
+          <div class="product-video-copy"><span class="video-kicker">NATAL · DECORAÇÃO</span><h3>Arco Natalino Decorativo</h3><p>Veja os recortes e os elementos do arco em movimento.</p><button class="video-card-link" type="button" data-detail="arco-natalino">Explorar o produto <span aria-hidden="true">↗</span></button></div>
+        </article>
+        <article class="product-video-card">
+          <div class="product-video-frame"><video controls playsinline preload="none" poster="assets/kit-ore-confie-principal.webp" width="1280" height="720" aria-label="Vídeo do Kit ORE e Confie com Mini Jesus"><source src="assets/video-kit-ore-confie.mp4" type="video/mp4">Seu navegador não reproduz este vídeo.</video></div>
+          <div class="product-video-copy"><span class="video-kicker">DECORAÇÃO · COLECIONÁVEIS</span><h3>Kit ORE e Confie com Mini Jesus</h3><p>Confira a composição e os detalhes do conjunto.</p><button class="video-card-link" type="button" data-detail="kit-ore-confie">Explorar o produto <span aria-hidden="true">↗</span></button></div>
+        </article>
+        <article class="product-video-card">
+          <div class="product-video-frame"><video controls playsinline preload="none" poster="assets/video-letreiro-feliz-natal-poster.jpg" width="720" height="1280" aria-label="Vídeo de um letreiro Feliz Natal com floco de neve"><source src="assets/video-letreiro-feliz-natal.mp4" type="video/mp4">Seu navegador não reproduz este vídeo.</video></div>
+          <div class="product-video-copy"><span class="video-kicker">NATAL · LETREIRO</span><h3>Letreiro Feliz Natal</h3><p>Um modelo natalino com floco de neve e base vermelha. Consulte disponibilidade.</p><a class="video-card-link" href="index.html?produto=personalizado#personalizar">Consultar este modelo <span aria-hidden="true">↗</span></a></div>
+        </article>
+        <article class="product-video-card">
+          <div class="product-video-frame"><video controls playsinline preload="none" poster="assets/kit-feliz-natal-principal.webp" width="640" height="360" aria-label="Vídeo do Kit Feliz Natal com bandeja"><source src="assets/video-kit-feliz-natal.mp4" type="video/mp4">Seu navegador não reproduz este vídeo.</video></div>
+          <div class="product-video-copy"><span class="video-kicker">NATAL · KIT COMPLETO</span><h3>Kit Feliz Natal com bandeja</h3><p>Veja a composição natalina em movimento.</p><a class="video-card-link" href="kit-feliz-natal.html">Ver página do kit <span aria-hidden="true">↗</span></a></div>
+        </article>
+      </div>
     </div>
   </section>
 

@@ -4,7 +4,7 @@ const products = [
     "title": "Kit Feliz Natal com bandeja",
     "category": "natal",
     "categoryLabel": "Natal",
-    "badge": "Kit completo · 3 fotos",
+    "badge": "Kit completo · fotos + vídeo",
     "kind": "photo",
     "isKit": true,
     "image": "assets/kit-feliz-natal-principal.webp",
@@ -32,6 +32,12 @@ const products = [
         "type": "image",
         "src": "assets/kit-feliz-natal-superior.webp",
         "alt": "O mesmo Kit Feliz Natal — vista superior"
+      },
+      {
+        "type": "video",
+        "src": "assets/video-kit-feliz-natal.mp4",
+        "poster": "assets/kit-feliz-natal-principal.webp",
+        "alt": "Vídeo do Kit Feliz Natal com bandeja em movimento"
       }
     ]
   },
@@ -40,7 +46,7 @@ const products = [
     "title": "Kit ORE e Confie com Mini Jesus",
     "category": "decoracao",
     "categoryLabel": "Decoração",
-    "badge": "Kit completo · 2 fotos",
+    "badge": "Kit completo · fotos + vídeo",
     "kind": "photo",
     "isKit": true,
     "image": "assets/kit-ore-confie-principal.webp",
@@ -63,6 +69,12 @@ const products = [
         "type": "image",
         "src": "assets/kit-ore-confie-superior.webp",
         "alt": "O mesmo Kit ORE e Confie — vista superior"
+      },
+      {
+        "type": "video",
+        "src": "assets/video-kit-ore-confie.mp4",
+        "poster": "assets/kit-ore-confie-principal.webp",
+        "alt": "Vídeo do Kit ORE e Confie com Mini Jesus em movimento"
       }
     ]
   },
@@ -167,7 +179,7 @@ const products = [
     "title": "Arco Natalino Decorativo",
     "category": "natal",
     "categoryLabel": "Natal",
-    "badge": "3 ângulos do produto",
+    "badge": "3 ângulos + vídeo",
     "kind": "photo",
     "image": "assets/arco-natalino-esquerda.webp",
     "alt": "Arco natalino branco com estrelas, árvores, casinhas e figuras natalinas",
@@ -193,6 +205,12 @@ const products = [
         "type": "image",
         "src": "assets/arco-natalino-superior.webp",
         "alt": "O mesmo Arco Natalino Decorativo — vista superior"
+      },
+      {
+        "type": "video",
+        "src": "assets/video-arco-natalino-camera.mp4",
+        "poster": "assets/arco-natalino-esquerda.webp",
+        "alt": "Vídeo do Arco Natalino Decorativo em movimento"
       }
     ]
   },

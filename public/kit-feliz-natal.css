@@ -15,6 +15,12 @@
 .sales-hero-card{margin:0;overflow:hidden;border-radius:10px;background:#fff;color:var(--ink);box-shadow:0 24px 80px #0004}
 .sales-hero-card img{display:block;width:100%;aspect-ratio:1 / 1;object-fit:cover}
 .sales-hero-card figcaption{display:flex;justify-content:space-between;gap:15px;padding:17px 20px;color:#666;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.sales-video-section{padding-block:78px;background:#f0efeb}
+.sales-video-grid{display:grid;grid-template-columns:1.1fr .8fr;gap:10%;align-items:center}
+.sales-video-frame{overflow:hidden;border-radius:10px;background:#0d0d0d;box-shadow:0 16px 45px #0002}
+.sales-video-frame video{display:block;width:100%;height:auto;aspect-ratio:16 / 9;background:#0d0d0d}
+.sales-video-copy h2{max-width:530px;margin:14px 0 18px;font-size:clamp(34px,4vw,48px)}
+.sales-video-copy p{max-width:500px;margin:0 0 24px;color:var(--muted);font-size:14px;line-height:1.9}
 .sales-intro{background:#fff}
 .sales-intro-grid{display:grid;grid-template-columns:1fr .72fr;gap:12%;align-items:end}
 .sales-intro h2,.sales-solution h2,.sales-offer h2,.sales-faq h2{max-width:650px}
@@ -70,11 +76,12 @@
   .sales-page .site-header .sales-nav{order:3;width:100%;justify-content:space-between;gap:10px;padding:4px 0}
   .sales-page .site-header .sales-nav a{font-size:11px}
   .sales-header-inner>.header-cta{min-height:40px;padding:9px 11px;font-size:10px}
-  .sales-hero-grid,.sales-intro-grid,.sales-solution-grid,.sales-assurance-inner,.sales-offer-grid{grid-template-columns:1fr;gap:34px}
+  .sales-hero-grid,.sales-video-grid,.sales-intro-grid,.sales-solution-grid,.sales-assurance-inner,.sales-offer-grid{grid-template-columns:1fr;gap:34px}
   .sales-hero-grid{padding-block:46px 54px}
   .sales-copy h1{max-width:520px;font-size:clamp(38px,11vw,52px);letter-spacing:-2.5px}
   .sales-lead{font-size:14px}
   .sales-hero-card{max-width:520px}
+  .sales-video-section{padding-block:58px}
   .sales-intro-grid,.sales-gallery{padding-block:66px}
   .sales-solution{padding-block:66px}
   .sales-gallery-grid{grid-template-columns:1fr 1fr;gap:10px}
