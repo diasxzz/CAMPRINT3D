@@ -339,6 +339,10 @@ h1 em, h2 em { color: var(--ink); font-weight: 500; }
   .sales-copy h1 { font-size: clamp(38px, 5.8vw, 54px); }
   .sales-page .site-header .sales-nav { order: initial; width: auto; padding: 0; }
 }
+@media (max-width: 850px) {
+  body:not(.sales-page) .site-header nav { display: none; }
+  body:not(.sales-page) .site-header .menu-toggle { display: inline-flex; }
+}
 @media (max-width: 760px) {
   .section-space { padding-block: 72px; }
   .site-header .menu-toggle { display: inline-flex; }
